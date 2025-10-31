@@ -1,0 +1,134 @@
+:root {
+  --ag-header-background-color: var(--cds-layer);
+
+  --ag-header-foreground-color: var(--cds-text-primary);
+
+  --ag-odd-row-background-color: var(--cds-layer);
+
+  --ag-row-hover-color: var(--cds-layer-hover);
+
+  --ag-grid-size: 2px;
+
+  --ag-header-font-size: 12px;
+
+  --ag-data-font-size: 12px;
+
+  --ag-body-font-color: #3f3f3f;
+
+  --ag-header-text-color: #3f3f3f;
+
+  --ag-row-bg-color: #e6e6e7;
+}
+
+.ag-row,
+.ag-spanned-row {
+  font-size: var(--ag-data-font-size) !important;
+  color: var(--ag-body-font-color);
+  border-bottom: 0.5px solid var(--rl-gray-border);
+  z-index: 1;
+}
+
+.no-bottom-border {
+  border-bottom: none !important;
+}
+
+.ag-paging-panel {
+  display: none;
+}
+
+.ag-title-bar {
+  background-color: var(--cds-layer);
+  color: var(--ag-header-text-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  font-weight: bold;
+  /* height: 45px; */
+}
+
+.ag-title-bar .cds--search-input {
+  border: 1px solid var(--rl-gray-border);
+  border-radius: 4px;
+  margin: 5px 0;
+}
+
+.ag-center-cols-container,
+.ag-center-cols-viewport {
+  min-height: unset !important;
+}
+
+.ag-center-cols-container {
+  min-width: 100%;
+}
+
+.ag-root-wrapper {
+  border-radius: 0;
+  border: 2px solid var(--rl-gray-border);
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.ag-overlay {
+  position: relative;
+  padding: 10px;
+  font-size: 12px;
+  color: gray;
+}
+
+.ag-body-viewport {
+  cursor: pointer;
+}
+
+.ag-cell {
+  border: 0 !important;
+  align-content: center;
+  font-size: 11px;
+  z-index: 1;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.ag-cell * {
+  line-height: normal;
+}
+
+.ag-overlay-wrapper {
+  padding-top: unset !important;
+}
+
+.ag-header-cell:last-child .ag-header-cell-resize {
+  display: none !important;
+}
+.ag-row:last-child {
+  border-bottom: none;
+}
+.pricing-setup-grid .ag-row:last-child {
+  border-bottom: 2px solid var(--rl-gray-border);
+}
+
+.loan-products-grid .ag-header-cell-text {
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.ag-pinned-left-header {
+  border: 1px solid var(--rl-blue-dark);
+}
+
+.ag-pinned-right-cols-container {
+  border-left: 1px solid var(--rl-gray-border);
+}
+
+.ag-header-cell-text {
+  white-space: normal !important;
+  line-height: 1.1; /* tighter line spacing */
+  margin: 0;
+}
+
+.ag-body-horizontal-scroll {
+  position: sticky;
+  bottom: 44px;
+  z-index: 1;
+  cursor: pointer;
+}

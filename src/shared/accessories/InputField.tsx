@@ -1,14 +1,16 @@
 // how to use
-{/* <InputField
+{
+  /* <InputField
                       label="Last Name"
                       name="lastName"
                       value={lastName}
                       onChange={handlePropertyDetails}
                       inValid={eLastName}
-                    /> */}
+                    /> */
+}
 
 import { useState, ChangeEvent, useEffect, useMemo } from "react";
-import { TextInput } from "@carbon/react";
+import { Form, Input } from "antd";
 import { capitalizeFirstLetter, cleanValue } from "../utils/commonFunctions";
 import {
   formatCellPhone,
@@ -17,7 +19,7 @@ import {
   formatPercentage,
   formatSSN,
 } from "../utils/formatFunctions";
-import { WarningFilled } from "@carbon/icons-react";
+import { WarningFilled } from "@ant-design/icons";
 import { Tooltip } from "react-tooltip";
 
 interface InputFieldProps {
@@ -40,7 +42,7 @@ interface InputFieldProps {
   onChange: any; //(params: object) => void; // Check Here - Logesh
   onBlur?: (params: object) => void;
   onFocus?: (params: object) => void;
-  size?: "sm" | "md" | "lg";
+  size?: "small" | "middle" | "large";
   className?: string;
   charLength?: number | undefined;
   inValid?: string;
@@ -50,6 +52,7 @@ interface InputFieldProps {
   allowNegative?: boolean;
   title?: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
 const InputField = ({
@@ -62,11 +65,12 @@ const InputField = ({
   onFocus = () => {},
   onChange = () => {},
   name = "",
-  size = "sm",
+  size = "small",
   className = "",
   charLength = undefined,
   inValid = "",
   inValidException = false,
+  required = true,
   allowNegative = false,
   ...textInputProps
 }: InputFieldProps) => {
@@ -270,11 +274,15 @@ const InputField = ({
         inValid && "input-invalid"
       } ${className} field-${name}`}
     >
-      <TextInput
+
+      <label htmlFor={id} className="block mb-1 text-sm font-medium text-gray-700">
+      { required && <span className="text-red-500 absolute left-[-10px] top-[-2px]">*</span> }
+        {label}
+      </label>
+      <Input
         {...textInputProps}
         type="text"
         size={size}
-        labelText={label}
         placeholder={placeholder || label}
         value={value || ""}
         onChange={handleChange}
@@ -286,10 +294,7 @@ const InputField = ({
           (["%", "$", "number"].includes(formatType) ? 16 : undefined)
         }
         title={value ? value.toString() : placeholder || label}
-        className={`${
-          textInputProps["disabled"] &&
-          "border-b-[0.5px] border-[var(--cds-border-strong)]"
-        }`}
+        disabled={textInputProps["disabled"]}
       />
 
       {/* {inValid && (
@@ -309,7 +314,7 @@ const InputField = ({
             data-tooltip-id={`${id}-tooltip`}
             className="cds--text-input__invalid-icon cursor-pointer translate-y-3 -translate-x-1"
           >
-            <WarningFilled size={14} fill="var(--rl-red)" />
+             <WarningFilled size={14} color="var(--rl-red)" />
           </span>
 
           <Tooltip

@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.6.1",
     "@carbon/icons-react": "^11.70.0",
     "@carbon/react": "^1.94.2",
     "ag-grid-community": "^34.3.1",
     "ag-grid-react": "^34.3.1",
+    "antd": "^5.28.0",
     "axios": "^1.13.1",
     "carbon-react": "^158.0.0",
     "moment": "^2.30.1",

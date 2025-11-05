@@ -176,7 +176,7 @@ const App = () => {
                   onChange={handleInputChange}
                   inValid={validationErrors.firstName}
                   placeholder="Enter first name"
-                  size="lg"
+                  size="middle"
                 />
                 
                 <InputField
@@ -186,7 +186,7 @@ const App = () => {
                   onChange={handleInputChange}
                   inValid={validationErrors.lastName}
                   placeholder="Enter last name"
-                  size="lg"
+                  size="middle"
                 />
                 
                 <InputField
@@ -196,7 +196,7 @@ const App = () => {
                   onChange={handleInputChange}
                   inValid={validationErrors.email}
                   placeholder="Enter email address"
-                  size="lg"
+                  size="middle"
                 />
                 
                 <InputField
@@ -206,7 +206,7 @@ const App = () => {
                   onChange={handleInputChange}
                   formatType="phone"
                   placeholder="Enter phone number"
-                  size="lg"
+                  size="middle"
                 />
               </div>
             </div>
@@ -237,14 +237,15 @@ const App = () => {
                 />
                 
                 <InputField
-                  label="Percentage"
+                  label="Percentage123"
                   name="percentage"
-                  value={formData.percentage}
+                  value={formData.percentage} 
                   onChange={handleInputChange}
                   formatType="%"
                   placeholder="0.00%"
                   decimalPoints={2}
                   size="lg"
+                  className="mb-0 FranklinGothicMedium !text-base"
                 />
               </div>
             </div>

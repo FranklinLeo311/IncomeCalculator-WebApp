@@ -13,9 +13,9 @@ export const WAGE_DATA = [
     employer_name: "IMB",
     DateOfHire: "11-04-2025",
     ActiveEmploymentFlag: "0",
-    PaidThruDate: null,
+    PaidThruDate: "11-04-2025",
     NoOfMonthsEmployed: "0.00",
-    DateOfTermination: null,
+    DateOfTermination: "11-04-2025",
     Totalincome: "0.00",
     gap: "0.00"
   },

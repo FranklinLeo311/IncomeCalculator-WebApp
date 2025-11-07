@@ -1,6 +1,8 @@
 import React from "react";
 import { Card } from "antd";
-
+import WageEarnerTabContent from "./incomeSourceComponent/wageEarner/wageEarnerTabContent";
+import WageEarnerTopContent from "./incomeSourceComponent/wageEarner/wagerEarnerTopContent";
+import WageEarnerBottomContent from "./incomeSourceComponent/wageEarner/wageEarnerBottomContent";
 interface Wage {
   borrowerwageid: string;
   employer_name: string;
@@ -26,7 +28,11 @@ interface Props {
   selfemployed: SelfEmployed[];
 }
 
-export default function LoanDetailContent({ borrower, wages, selfemployed }: Props) {
+export default function LoanDetailContent({
+  borrower,
+  wages,
+  selfemployed,
+}: Props) {
   if (!borrower) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-300">
@@ -38,47 +44,20 @@ export default function LoanDetailContent({ borrower, wages, selfemployed }: Pro
   return (
     <div className="p-6 space-y-6">
       {/* Borrower Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3">
+      {/* <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-3">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
           Borrower: {borrower.name}
         </h2>
         <span className="text-sm text-gray-500">ID: {borrower.id}</span>
-      </div>
+      </div> */}
 
       {/* Wage Earner Section */}
-      <Card
-        title="Wage Earner Details"
-        bordered={false}
-        className="shadow-sm dark:bg-gray-800 dark:text-gray-100"
-      >
-        {wages.length > 0 ? (
-          <div className="space-y-3">
-            {wages.map((wage) => (
-              <div
-                key={wage.borrowerwageid}
-                className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2"
-              >
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-gray-100">
-                    {decodeURIComponent(wage.employer_name)}
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    Date of Hire: {wage.DateOfHire}
-                  </div>
-                </div>
-                <div className="font-semibold text-gray-700 dark:text-gray-200">
-                  ${wage.Totalincome}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-gray-500 dark:text-gray-400">No wage data available</div>
-        )}
-      </Card>
+      <WageEarnerTopContent wages={wages[0]}/>
+      <WageEarnerTabContent />
+      <WageEarnerBottomContent />
 
       {/* Self Employed Section */}
-      <Card
+      {/* <Card
         title="Self-Employed Details"
         bordered={false}
         className="shadow-sm dark:bg-gray-800 dark:text-gray-100"
@@ -109,7 +88,7 @@ export default function LoanDetailContent({ borrower, wages, selfemployed }: Pro
             No self-employed data available
           </div>
         )}
-      </Card>
+      </Card> */}
     </div>
   );
 }

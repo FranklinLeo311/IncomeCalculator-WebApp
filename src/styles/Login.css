@@ -1,0 +1,270 @@
+body, html {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  height: 100%;
+}
+ 
+.login-container {
+  display: flex;
+  /* align-items: center; */
+  justify-content: center;
+  height: 100vh;
+  /* background-image: url('/src/assets/Vector.svg');
+  background: linear-gradient(180deg, #0093E9 0%, #80D0C7 100%); */
+}
+ 
+/* .login-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 40px 50px;
+  width: 420px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  text-align: left;
+} */
+ 
+.logo {
+  display: block;
+  margin: 0 auto 15px auto;
+  height: 40px;
+}
+ 
+.login-title {
+    
+    font-style: regular;
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 25px;
+  color: #333;
+  
+}
+ 
+label {
+  font-size: 14px;
+  color: #333;
+  display: block;
+  margin-bottom: 6px;
+}
+ 
+input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+ 
+.password-field {
+  position: relative;
+}
+ 
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 9px;
+  cursor: pointer;
+  font-size: 16px;
+}
+ 
+.forgot-link {
+  font-size: 13px;
+  color: #007AFF;
+  text-decoration: none;
+  margin-top: -10px;
+  display: inline-block;
+  margin-bottom: 16px;
+}
+ 
+.captcha-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+ 
+.captcha-img {
+  height: 30px;
+}
+ 
+.refresh {
+  cursor: pointer;
+  font-size: 18px;
+}
+ 
+.login-btn {
+  background: #0093E9;
+  border: none;
+  color: #fff;
+  width: 100%;
+  padding: 12px 0;
+  font-size: 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+ 
+.login-btn:hover {
+  background: #007fcc;
+}
+ 
+.arrow {
+  margin-left: 5px;
+}
+/* Container for the password input field */
+.password-field {
+  position: relative;
+  width: 100%;
+  /* max-width: 300px; Adjust this to control input width */
+  margin: 0 auto;
+}
+
+/* Style for the password input field */
+.password-field input {
+  width: 100%;
+  height: 40px;
+  padding-left: 35px !important;  /* Space for the lock icon */
+  padding-right: 35px; /* Space for the eye icon */
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  background-color: #fff;
+  padding: 10px;
+}
+
+/* Placeholder styling */
+.password-field input::placeholder {
+  color: #888;
+  /* padding-left: 25px; To align placeholder text next to the lock icon */
+}
+
+/* Lock icon inside the input field */
+.password-field input {
+  background-image: url('/src/assets/LeftContent.png'); /* Path to your lock image */
+  background-size: 20px 20px;  /* Adjust the size of the lock image */
+  background-repeat: no-repeat;
+  background-position: 10px center; /* Position the lock icon inside the input field */
+}
+
+/* Toggle password visibility icon (eye/monkey) */
+.toggle-password {
+  position: absolute;
+  right: 10px; /* Position it at the right edge */
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Style for input field focus */
+.password-field input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Container to center the login card */
+/* Background container */
+.log_bg {
+  display: flex;
+  justify-content: center;  /* Horizontally center */
+  align-items: center;      /* Vertically center */
+  height: 100vh;            /* Full viewport height */
+  position: relative;
+  background: url('/src/assets/shape.svg') no-repeat center center; /* Set background image */
+  background-size: cover;  /* Ensure the background image covers the entire section */
+  /* clip-path: ellipse(80% 100% at 50% 100%);   */
+}
+
+/* The login card */
+.login-card {
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: for a shadow effect */
+  border-radius: 8px;
+  /* width: 450px; Optional: Limit width */
+  width: 30%;
+  z-index: 2;  /* Ensure it appears above the background */
+}
+
+/* Optional: styling for other elements */
+.captcha-field {
+  display: flex;
+  align-items: center;
+}
+
+.captcha_sec {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px; /* Add some space between canvas and input */
+}
+ .circle1 {
+    width: 482px;
+    height: 482px;
+    border-radius: 80%;
+    background-color: #ffff;
+    position: absolute;
+    top: -12rem;
+    left: -8rem;
+    z-index: 8;
+    opacity: 0.1;
+}
+
+ .circle2 {
+    width: 254px;
+    height: 254px;
+    border-radius: 80%;
+    background-color: #ffff;
+    position: absolute;
+    top: 4rem;
+    right: -5rem;
+    z-index: 8;
+    opacity: 0.1;
+}
+.captcha-label
+{
+  /* margin-top:30px; */
+  margin-left:240px;
+}
+
+.alert {
+    position: relative;
+    padding: 1rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: .25rem
+}
+.alert-danger {
+    color: #842029;
+    background-color: #f8d7da;
+    border-color: #f5c2c7
+}
+
+.alert-danger .alert-link {
+    color: #6a1a21
+}
+.modal-footer .btn-primary,
+.save_btn {
+    background-color: #4D4D4D !important;
+    border-color: #4D4D4D !important;
+    color: #ffff;
+}
+
+ .modal-footer .btn-primary:hover,
+    .save_btn:hover {
+        background-color: #ffff !important;
+        border-color: #4D4D4D !important;
+        color: #4D4D4D !important;
+    }
+
+    .btn-secondary {
+    background-color: #293144 !important;
+    border-color: #293144 !important;
+    font-weight: 600;
+    font-size: 14px !important;
+}
+
+    .btn-secondary:hover {
+        background-color: #5b6377 !important;
+        border-color: #5b6377 !important;
+    }

@@ -6,7 +6,7 @@ import VOE from "./VOE";
 import W2 from "./W2";
 
 const WageEarnerTabContent = () => {
-  const [activeTab, setActiveTab] = useState("summary"); // single state for active tab
+  const [activeTab, setActiveTab] = useState({ Tab: "summary" });
 
   return (
     <div className="font-[Creato_Display] text-[#303030]">
@@ -21,11 +21,16 @@ const WageEarnerTabContent = () => {
         <div
           className={`flex items-center justify-between w-[120px] h-[48px] px-[16px] border border-[#e0e0e0] border-b-0 text-[14px] cursor-pointer 
             ${
-              activeTab === "summary"
+              activeTab.Tab === "summary"
                 ? "border-b-[4px] border-b-[#24a1dd] text-[#303030]"
                 : "text-[#4d4d4d] hover:bg-[#f5f5f5]"
             }`}
-          onClick={() => setActiveTab("summary")}
+          onClick={() =>
+            setActiveTab((prev) => ({
+              ...prev,
+              Tab: "summary",
+            }))
+          }
         >
           <span className="mr-[8px] flex items-center">📋</span>
           <span className="flex-1">Summary</span>
@@ -34,11 +39,16 @@ const WageEarnerTabContent = () => {
         <div
           className={`flex items-center justify-between w-[120px] h-[48px] px-[16px] border border-[#e0e0e0] border-b-0 text-[14px] cursor-pointer 
             ${
-              activeTab === "paystub"
+              activeTab.Tab === "paystub"
                 ? "border-b-[4px] border-b-[#24a1dd] text-[#303030]"
                 : "text-[#4d4d4d] hover:bg-[#f5f5f5]"
             }`}
-          onClick={() => setActiveTab("paystub")}
+          onClick={() =>
+            setActiveTab((prev) => ({
+              ...prev,
+              Tab: "paystub",
+            }))
+          }
         >
           <span className="flex-1">Pay Stub</span>
           <span>
@@ -74,11 +84,16 @@ const WageEarnerTabContent = () => {
         <div
           className={`flex items-center justify-between w-[120px] h-[48px] px-[16px] border border-[#e0e0e0] border-b-0 text-[14px] cursor-pointer 
             ${
-              activeTab === "voe"
+              activeTab.Tab === "voe"
                 ? "border-b-[4px] border-b-[#24a1dd] text-[#303030]"
                 : "text-[#4d4d4d] hover:bg-[#f5f5f5]"
             }`}
-          onClick={() => setActiveTab("voe")}
+          onClick={() =>
+            setActiveTab((prev) => ({
+              ...prev,
+              Tab: "voe",
+            }))
+          }
         >
           <span className="flex-1">VOE</span>
           <span>
@@ -114,11 +129,16 @@ const WageEarnerTabContent = () => {
         <div
           className={`flex items-center justify-between w-[120px] h-[48px] px-[16px] border border-[#e0e0e0] border-b-0 text-[14px] cursor-pointer 
             ${
-              activeTab === "w2"
+              activeTab.Tab === "w2"
                 ? "border-b-[4px] border-b-[#24a1dd] text-[#303030]"
                 : "text-[#4d4d4d] hover:bg-[#f5f5f5]"
             }`}
-          onClick={() => setActiveTab("w2")}
+          onClick={() =>
+            setActiveTab((prev) => ({
+              ...prev,
+              Tab: "w2",
+            }))
+          }
         >
           <span className="flex-1">W2</span>
           <span>
@@ -153,7 +173,12 @@ const WageEarnerTabContent = () => {
         {/* Add New Wage Earner */}
         <div
           className="flex justify-center items-center w-[48px] h-[48px] p-0 border border-[#e0e0e0] cursor-pointer hover:bg-[#f5f5f5]"
-          onClick={() => setActiveTab("new")}
+          onClick={() =>
+            setActiveTab((prev) => ({
+              ...prev,
+              Tab: "new",
+            }))
+          }
         >
           <svg
             width="20"
@@ -202,11 +227,11 @@ const WageEarnerTabContent = () => {
 
       {/* Content Section */}
       <div className="flex flex-col items-center p-6 gap-6 w-[90%] h-[auto] bg-white self-stretch rounded-[3px] shadow-[0_2px_6px_rgba(0,0,0,0.05)] border border-[#e0e0e0]">
-        {activeTab === "summary" && <Summary />}
-        {activeTab === "paystub" && <PayStub />}
-        {activeTab === "voe" && <VOE />}
-        {activeTab === "w2" && <W2 />}
-        {activeTab === "new" && <WageEarnerNew />}
+        {activeTab.Tab === "summary" && <Summary />}
+        {activeTab.Tab === "paystub" && <PayStub />}
+        {activeTab.Tab === "voe" && <VOE />}
+        {activeTab.Tab === "w2" && <W2 />}
+        {activeTab.Tab === "new" && <WageEarnerNew />}
       </div>
     </div>
   );

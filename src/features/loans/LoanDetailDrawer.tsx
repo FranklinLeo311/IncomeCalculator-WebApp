@@ -1,7 +1,7 @@
 import { Drawer } from "antd";
 import LoanDetailHeader from "./loanDetails/LoanDetailHeader";
 import LoanDetailSideBar from "./loanDetails/LoanDetailSideBar";
-// import BorrowerDetailPanel from "./loanDetails/BorrowerDetailPanel";
+import LoanDetailContent from "./loanDetails/LoanDetailContent";
 import { BORROWERS, WAGE_DATA, SELFEMPLOYED } from "./loanDetails/data";
 
 interface UIState {
@@ -68,19 +68,14 @@ export default function LoanDetailDrawer({ ui, updateUI }: Props) {
 
           {/* 3. Main content on the right */}
           <div className="flex-1 overflow-y-auto p-6">
-            {/* Uncomment when ready */}
-            {/* {selectedBorrower ? (
-              <BorrowerDetailPanel
-                borrower={selectedBorrower}
-                wages={wages}
-                selfemployed={selfemployed}
-              />
-            ) : (
-              <div className="text-gray-500">Select a borrower from the left</div>
-            )} */}
-            <div className="text-gray-500 dark:text-gray-300">
+            <LoanDetailContent
+    borrower={selectedBorrower}
+    wages={wages}
+    selfemployed={selfemployed}
+  />
+            {/* <div className="text-gray-500 dark:text-gray-300">
               Select a borrower from the sidebar
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

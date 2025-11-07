@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "antd";
 import LoanDetailDrawer from "./LoanDetailDrawer";
+import { handlePostApi } from "../../shared/utils/api";
 
 export default function LoansPage() {
   const [ui, setUI] = useState({
@@ -21,9 +22,28 @@ export default function LoansPage() {
   const updateUI = (changes: Partial<typeof ui>) =>
     setUI(prev => ({ ...prev, ...changes }));
 
+ const handleClick = async () => {
+    // Remove the curly braces and send as proper XML string
+    const xmlData = `<user>
+  <tenantid>7</tenantid>
+  <firstname>MORIES</firstname>
+  <lastname>jade</lastname>
+  <mobileno>1234355333</mobileno>
+  <email>qc@jquieen2.com</email>
+  <status>1</status>
+  <access>10</access>
+  <permission>3,9</permission>
+  <clerkid>67</clerkid>
+  <flag>newuser</flag>
+</user>`;
+    
+    const response = await handlePostApi("/api/CreateUser", xmlData, 'application/xml');
+    console.log(response);
+};
+
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-semibold mb-4">Loans</h2>
+      <h2 className="text-2xl font-semibold mb-4">Loans List page</h2>
 
       <Button
         type="primary"
@@ -36,6 +56,13 @@ export default function LoansPage() {
         }
       >
         Open Loan Details
+      </Button>
+
+      <Button
+        type="primary"
+        onClick={handleClick}
+      >
+        Test Api call
       </Button>
 
       <LoanDetailDrawer ui={ui} updateUI={updateUI} />

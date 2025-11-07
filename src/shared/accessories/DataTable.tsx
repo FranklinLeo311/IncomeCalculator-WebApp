@@ -29,7 +29,7 @@ import {
   forwardRef,
   useCallback,
 } from "react";
-import { Pagination } from "@carbon/react";
+import { Pagination } from "antd";
 import { RowClickedEvent } from "ag-grid-community";
 import useWindowWidth from "../hooks/useWindowWidth";
 

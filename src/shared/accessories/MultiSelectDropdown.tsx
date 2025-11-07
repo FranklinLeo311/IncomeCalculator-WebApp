@@ -1,21 +1,13 @@
-// how to use
-{/* <MultiSelectDropdown
-              label="Product Category"
-              options={productCategoryOptions}
-              name="productCategory"
-              value={searchInputs.productCategory || ""}
-              onChange={handleUpdateSearchInputs}
-              inValid={formValidationDetails.productCategory}
-            /> */}
 import { WarningFilled } from "@carbon/icons-react";
-import { MultiSelect } from "@carbon/react";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { capitalizeFirstLetter } from "../utils/commonFunctions";
 import { Tooltip } from "react-tooltip";
+import { Checkbox, Select } from "antd";
 
 interface OptionWithValue {
   label: string;
-  value: number | string;
+  value: string;
+  defaultPermission?: string;
   disabled?: boolean;
 }
 
@@ -23,6 +15,7 @@ type KeyConfig = {
   value: string;
   label: string;
 };
+
 interface MultiSelectDropdownProps {
   options: OptionWithValue[];
   label?: string;
@@ -31,8 +24,10 @@ interface MultiSelectDropdownProps {
   onChange: (selected: any | null | undefined) => void;
   disabled?: boolean;
   readOnly?: boolean;
-  value: number | null;
-  size?: "sm" | "md" | "lg";
+  value: string;
+  size?: "small" | "middle" | "large";
+  virtual?: boolean;
+  required?: boolean;
   inValid?: string | boolean;
   warn?: boolean;
   warnText?: string;
@@ -41,104 +36,120 @@ interface MultiSelectDropdownProps {
   className?: string;
   keyConfig?: KeyConfig;
 }
+
 const noRecordsOption = [
   { label: "No record found", value: "", disabled: true },
 ];
 
-interface HandleUpdateKeyParams {
-  keyConfig: KeyConfig;
-  options: { [key: string]: any };
-}
-
-export const handleUpdateKey = ({
-  keyConfig: { value: k, label: l },
-  options,
-}: HandleUpdateKeyParams): { value: any; label: any; disabled?: boolean }[] => {
-  return options.map((option: any) => ({
-    value: option[k],
-    label: option[l],
-    disabled: Boolean(option["disabled"]),
-  }));
-};
-
 const MultiSelectDropdown = ({
-  options: iOptions = [],
+  options = [],
   label = "",
   onChange,
-  value = null,
+  value = "",
   name = "",
-  size = "sm",
+  size = "small",
+  virtual = false,
   inValid = "",
   className = "",
+  required = false,
   keyConfig,
+  placeholder = "Select a role",
   ...rest
 }: MultiSelectDropdownProps) => {
-  value = Number(value);
 
-  let options = useMemo(() => {
-    return keyConfig
-      ? handleUpdateKey({ keyConfig, options: iOptions })
-      : iOptions.map((item) => ({
-          ...item,
-          disabled: Boolean(item.disabled),
-        }));
-  }, [iOptions, keyConfig]);
+  const selectedValues = useMemo(() => {
+    return value.split(",").filter((v) => v.trim() !== "");
+  }, [value]);
 
-  options = options.length === 0 ? noRecordsOption : options;
+  useEffect(() => {
+    if (!options || options.length === 0) return;
 
-  const { selectedItems, selectedItemText } = useMemo(() => {
-      if (!value) {
-        return { selectedItems: [], selectedItemText: "" };
-      }
-      const selectedItems = options.filter(
-          ({ value: iValue, disabled = false }) =>
-            !disabled && (value & Number(iValue)) === Number(iValue)
-        ),
-        selectedItemText = selectedItems.map((item) => item.label).join(", ");
+    const defaultPermissionStr = options[0]?.defaultPermission || "";
 
-      return { selectedItems, selectedItemText };
-    }, [options, value]),
-    handleChange = (data: { selectedItems: OptionWithValue[] }) => {
-      const bitwiseValue = data.selectedItems.reduce(
-        (acc, curr) => acc | Number(curr.value),
-        0
-      );
-      onChange({ name, value: bitwiseValue });
-    };
+    const defaultPermissionValues = defaultPermissionStr
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
+
+    const commaSeparatedValue = defaultPermissionValues.join(",");
+
+    onChange({ name, value: commaSeparatedValue });
+  }, [options]);
+
+  const handleChange = (selectedValueArray: string[]) => {
+    const commaSeparatedValue = selectedValueArray.join(",");
+    onChange({ name, value: commaSeparatedValue });
+  };
 
   const id = useMemo(
-    () => Math.floor(100 + Math.random() * 900).toString(),
-    [name]
+    () => `select_${Math.floor(100 + Math.random() * 900)}`,
+    []
   );
+
+  const displayValue = selectedValues.length === 0 ? [] : selectedValues;
+
+  const optionRender = (option: any) => {
+    const isSelected = selectedValues.includes(option.value);
+    return (
+      <div
+        style={{ display: "flex", alignItems: "center" }}
+        onMouseDown={(e) => {
+          e.preventDefault();
+
+          e.stopPropagation();
+        }}
+      >
+        <Checkbox checked={isSelected} />
+        <span className="ml-3">{option.label}</span>
+      </div>
+    );
+  };
 
   return (
     <div
-      className={`${
-        inValid && "relative input-invalid"
+      className={`relative ${
+        inValid && " input-invalid"
       } ${className} field-${name}`}
     >
-      <MultiSelect
+      {label && (
+        <label
+          htmlFor={id}
+          className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200"
+        >
+          {required && (
+            <span className="text-red-500 absolute left-[-10px] top-[-2px]">
+              *
+            </span>
+          )}
+
+          {label}
+        </label>
+      )}
+
+      <Select
         id={id}
-        items={options}
-        sortItems={(e: OptionWithValue[]) => e}
-        itemToString={(item) => item?.label || ""}
-        label={selectedItemText || label}
+        mode="multiple"
+        options={options.length === 0 ? noRecordsOption : options}
+        value={displayValue}
         titleText={label}
-        selectedItems={selectedItems}
         onChange={handleChange}
         size={size}
+        maxTagCount="responsive"
+        className="dark:bg-gray-900 dark:text-gray-200 w-[100%]"
+        allowClear={true}
+        placeholder={placeholder}
+        filterOption={(input, option) =>
+          (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+        }
+        filterSort={(optionA, optionB) =>
+          (optionA?.label ?? "")
+            .toLowerCase()
+            .localeCompare((optionB?.label ?? "").toLowerCase())
+        }
+        optionRender={optionRender}
         {...rest}
       />
-      {/* {inValid && (
-        <Tooltip
-          label={inValid || "Invalid input"}
-          align="top"
-          className="cds--text-input__invalid-icon !absolute cursor-pointer"
-          style={{ "inset-block-start": "72%", "inset-inline-end": "1.5rem" }}
-        >
-          <WarningFilled size={14} fill="var(--rl-red)" />
-        </Tooltip>
-      )} */}
+
       {inValid && (
         <>
           <span

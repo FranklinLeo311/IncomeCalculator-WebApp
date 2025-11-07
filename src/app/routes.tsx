@@ -2,6 +2,7 @@ import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
 import AppLayout from "../layouts/AppLayout";
 
+
 const LoginPage = lazy(() => import("../features/auth/LoginPage"));
 const DashboardPage = lazy(() => import("../features/dashboard/DashboardPage"));
 const LoanListPage = lazy(() => import("../features/loans/LoanListPage"));
@@ -9,6 +10,7 @@ const LoanListPage = lazy(() => import("../features/loans/LoanListPage"));
 const DocumentsPage = lazy(() => import("../features/documents/DocumentsPage"));
 const FaqPage = lazy(() => import("../features/faq/FaqPage"));
 const ContactPage = lazy(() => import("../features/contact/ContactPage"));
+const Users = lazy(() => import("../features/user/users"));
 
 export const appRoutes: RouteObject[] = [
   {
@@ -25,7 +27,9 @@ export const appRoutes: RouteObject[] = [
       // { path: "loans/:id", element: <LoanDetailsPage /> },
       { path: "documents", element: <DocumentsPage /> },
       { path: "faq", element: <FaqPage /> },
-      { path: "contact", element: <ContactPage /> }
+      { path: "contact", element: <ContactPage /> },
+      { path: "user", element: <Users /> }
+
     ]
   }
 ];

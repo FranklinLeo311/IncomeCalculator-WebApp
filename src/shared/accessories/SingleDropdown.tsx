@@ -10,20 +10,18 @@
               className="w-[200px]"
             /> */
 }
-import { WarningFilled } from "@carbon/icons-react";
-import { Checkbox, Select, Space } from "antd";
+import {  WarningFilled } from "@carbon/icons-react";
+import { Select } from "antd";
 import { Tooltip } from "react-tooltip";
 import { useMemo, useState } from "react";
 import { capitalizeFirstLetter } from "../utils/commonFunctions";
-import { handleUpdateKey } from "./MultiSelectDropdown";
-import { CheckOutlined } from "@ant-design/icons";
 
 interface SingleDropdownProps {
   options: { label: string; value: string | number; disabled?: boolean }[];
   itemToString?: (item: any | null | undefined) => string;
   label?: string;
   placeholder?: string;
-  multiSelect?: boolean;
+
   helperText?: string;
   onChange: (selected: any | null | undefined) => void;
   onFocus?: () => void;
@@ -32,6 +30,7 @@ interface SingleDropdownProps {
   readOnly?: boolean;
   selectedItem?: any | null | undefined;
   size?: "small" | "middle" | "large";
+  virtual?: boolean;
   allowCustomValue?: boolean;
   inValid?: string | boolean;
   warn?: boolean;
@@ -53,9 +52,9 @@ const SingleDropdown = (props: SingleDropdownProps) => {
   let {
     options: iOptions = [],
     onChange,
-    multiSelect = false,
     label = "",
     size = "small",
+    virtual = false,
     name,
     value,
     className = "",
@@ -67,11 +66,31 @@ const SingleDropdown = (props: SingleDropdownProps) => {
     onBlur = () => {},
     exceptionField = false,
     includeZero = false,
-    required = true,
+    required = false,
     ...rest
   } = props;
 
   const isNotNumber = name.toLocaleLowerCase().includes("state");
+  type KeyConfig = {
+  value: string;
+  label: string;
+};
+  interface HandleUpdateKeyParams {
+  keyConfig: KeyConfig;
+  options: { [key: string]: any };
+}
+
+const handleUpdateKey = ({
+  keyConfig: { value: k, label: l },
+  options,
+}: HandleUpdateKeyParams): { value: any; label: any; disabled?: boolean }[] => {
+  return options.map((option: any) => ({
+    value: option[k],
+    label: option[l],
+    disabled: Boolean(option["disabled"]),
+  }));
+};
+
 
   const options = useMemo(() => {
     return keyConfig
@@ -100,23 +119,23 @@ const SingleDropdown = (props: SingleDropdownProps) => {
   }, [value, options]);
 
   const handleChange = (e: any) => {
-    // if (e["inputValue"]) return;
-    // setIsOpen(false);
+    if (e["inputValue"]) return;
+    setIsOpen(false);
 
-    const selected = e["selectedItem"]
-      ? typeof e["selectedItem"] === "object"
-        ? e["selectedItem"]["value"]
-        : e["selectedItem"]
-      : "";
+    // const selected = e["selectedItem"]
+    //   ? typeof e["selectedItem"] === "object"
+    //     ? e["selectedItem"]["value"]
+    //     : e["selectedItem"]
+    //   : "";
 
-    onChange({ name, value: selected });
+    onChange({ name, value: e });
     setInputValue("");
-    if (e["selectedItem"] === undefined) {
-      setTimeout(() => {
-        document.getElementById(id)?.focus();
-        document.getElementById(id)?.blur();
-      }, 100);
-    }
+    // if (e["selectedItem"] === undefined) {
+    //   setTimeout(() => {
+    //     document.getElementById(id)?.focus();
+    //     document.getElementById(id)?.blur();
+    //   }, 100);
+    // }
   };
 
   const selectedItem = useMemo(() => {
@@ -163,12 +182,6 @@ const SingleDropdown = (props: SingleDropdownProps) => {
     () => `select_${Math.floor(100 + Math.random() * 900)}`,
     []
   );
-  const tempOptions = [
-    { value: "jack", label: "Jack", isSelected: true },
-    { value: "lucy", label: "Lucy" },
-    { value: "Yiminghe", label: "yiminghe" },
-    { value: "disabled", label: "Disabled", disabled: true },
-  ];
 
   return (
     <div
@@ -180,7 +193,7 @@ const SingleDropdown = (props: SingleDropdownProps) => {
     >
       <label
         htmlFor={id}
-        className="block mb-1 text-sm font-medium text-gray-700"
+        className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200"
       >
         {required && (
           <span className="text-red-500 absolute left-[-10px] top-[-2px]">
@@ -191,32 +204,19 @@ const SingleDropdown = (props: SingleDropdownProps) => {
       </label>
       <Select
         {...rest}
-        mode={multiSelect ? "multiple" : undefined}
-        maxTagCount="responsive"
-        options={tempOptions}
+        options={filteredOptions}
         placeholder={placeholder || label}
         onChange={handleChange}
         optionFilterProp={"label"}
-        filterOption={(input, option) =>
-          (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
-        }
-        // optionRender={(option) => (
-        //   <Space>
-        //     <span role="img" aria-label={option.data.label}>
-        //       <Checkbox checked={false} />
-        //     </span>
-        //     {option.data.label}
-        //   </Space>
-        // )}
         title={selectedItem ? selectedItem["label"] : ""}
-        menuItemSelectedIcon ={null}
+        menuItemSelectedIcon={null}
         id={id}
         allowClear={true}
         size={size}
         virtual={true}
-        className="w-[200px]"
+        className="dark:bg-gray-900 dark:text-gray-200 w-[100%]"
       />
-      {/* <div
+      <div
         className="caret-zone"
         id={`${id}-caret-zone`}
         title="Open menu"
@@ -232,7 +232,7 @@ const SingleDropdown = (props: SingleDropdownProps) => {
             }
           } catch (error) {}
         }}
-      /> */}
+      />
       {inValid && (
         <>
           <span

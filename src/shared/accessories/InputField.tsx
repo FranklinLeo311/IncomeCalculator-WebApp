@@ -70,7 +70,7 @@ const InputField = ({
   charLength = undefined,
   inValid = "",
   inValidException = false,
-  required = true,
+  required = false,
   allowNegative = false,
   ...textInputProps
 }: InputFieldProps) => {
@@ -275,14 +275,15 @@ const InputField = ({
       } ${className} field-${name}`}
     >
 
-      <label htmlFor={id} className="block mb-1 text-sm font-medium text-gray-700">
-      { required && <span className="text-red-500 absolute left-[-10px] top-[-2px]">*</span> }
+      <label htmlFor={id} className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
+      { required && <span className="text-red-500 absolute left-[-10px]">*</span> }
         {label}
       </label>
       <Input
         {...textInputProps}
         type="text"
-        size={size}
+        // size={size}
+        size="large"
         placeholder={placeholder || label}
         value={value || ""}
         onChange={handleChange}
@@ -295,6 +296,8 @@ const InputField = ({
         }
         title={value ? value.toString() : placeholder || label}
         disabled={textInputProps["disabled"]}
+        status={inValid ? "error" : ""}
+        className="dark:bg-gray-900 dark:text-gray-200 w-[100%]"
       />
 
       {/* {inValid && (

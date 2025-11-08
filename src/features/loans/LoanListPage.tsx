@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "antd";
 import LoanDetailDrawer from "./LoanDetailDrawer";
-import { handlePostApi } from "../../shared/utils/api";
+import { handlePostApi, handleGetApi } from "../../shared/utils/api";
 
 export default function LoansPage() {
+
+  useEffect(() => {
+    const fetchLoans = async () => {
+      const loans = await handleGetApi("/api/GetLoans");
+      console.log(loans);
+    };
+    fetchLoans();
+  }, []);
   const [ui, setUI] = useState({
     showLoanDrawer: false,
     // will store the sidebar state and selection
@@ -24,22 +32,12 @@ export default function LoansPage() {
 
  const handleClick = async () => {
     // Remove the curly braces and send as proper XML string
-    const xmlData = `<user>
-  <tenantid>7</tenantid>
-  <firstname>MORIES</firstname>
-  <lastname>jade</lastname>
-  <mobileno>1234355333</mobileno>
-  <email>qc@jquieen2.com</email>
-  <status>1</status>
-  <access>10</access>
-  <permission>3,9</permission>
-  <clerkid>67</clerkid>
-  <flag>newuser</flag>
-</user>`;
+    const loadNo = `3910`;
     
-    const response = await handlePostApi("/api/CreateUser", xmlData, 'application/xml');
+    const response = await handlePostApi("/api/GetWEData", loadNo);
     console.log(response);
 };
+
 
   return (
     <div className="p-6">

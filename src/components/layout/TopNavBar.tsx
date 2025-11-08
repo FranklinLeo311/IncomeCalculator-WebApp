@@ -2,7 +2,7 @@ import { Layout, Menu, Avatar, Dropdown, Badge, Space, Switch } from "antd";
 import { BellOutlined, UserOutlined, SearchOutlined, BulbOutlined } from "@ant-design/icons";
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "../../shared/contexts/TheameContext"; // Fixed typo in TheameContext
-
+import AiAssistantButton from "../../shared/accessories/AiAssistantButton";
 // Import all images directly
 import logo from "../../assets/ldna-icon.svg";
 import dashboardIcon from "../../assets/dashboardIcon.svg";
@@ -45,7 +45,7 @@ export function TopNavBar() {
     { 
       key: "/dashboard", 
       label: (
-        <Link to="/dashboard" className="flex items-center gap-2 px-3 py-2">
+        <Link to="/dashboard" className="flex items-center gap-2 px-3 py-2 mb-[16px]">
           <NavIcon src={icons.dashboard} alt="Dashboard" />
           <span className="text-gray-700 dark:text-gray-200 text-sm font-normal">Dashboard</span>
         </Link>
@@ -54,7 +54,7 @@ export function TopNavBar() {
     { 
       key: "/loans", 
       label: (
-        <Link to="/loans" className="flex items-center gap-2 px-3 py-2">
+        <Link to="/loans" className="flex items-center gap-2 px-3 py-2 mb-[16px]">
           <NavIcon src={icons.loans} alt="Loans" />
           <span className="text-gray-700 dark:text-gray-200 text-sm font-normal">Loans</span>
         </Link>
@@ -63,7 +63,7 @@ export function TopNavBar() {
     { 
       key: "/documents", 
       label: (
-        <Link to="/documents" className="flex items-center gap-2 px-3 py-2">
+        <Link to="/documents" className="flex items-center gap-2 px-3 py-2 mb-[16px]">
           <NavIcon src={icons.documents} alt="Documents" />
           <span className="text-gray-700 dark:text-gray-200 text-sm font-normal">Documents</span>
         </Link>
@@ -72,7 +72,7 @@ export function TopNavBar() {
     { 
       key: "/faq", 
       label: (
-        <Link to="/faq" className="flex items-center gap-2 px-3 py-2">
+        <Link to="/faq" className="flex items-center gap-2 px-3 py-2 mb-[16px]">
           <NavIcon src={icons.faq} alt="FAQ" />
           <span className="text-gray-700 dark:text-gray-200 text-sm font-normal">FAQ</span>
         </Link>
@@ -81,7 +81,7 @@ export function TopNavBar() {
     { 
       key: "/contact", 
       label: (
-        <Link to="/contact" className="flex items-center gap-2 px-3 py-2">
+        <Link to="/contact" className="flex items-center gap-2 px-3 py-2 mb-[16px]">
           <NavIcon src={icons.contact} alt="Contact" />
           <span className="text-gray-700 dark:text-gray-200 text-sm font-normal">Contact</span>
         </Link>
@@ -116,36 +116,28 @@ export function TopNavBar() {
         </div>
 
         {/* Navigation Menu - Always visible, no overflow */}
-        <div className="flex items-center h-16 flex-1 min-w-0">
-          <Menu
-            mode="horizontal"
-            selectedKeys={[location.pathname]}
-            items={navItems}
-            className="bg-transparent border-0 h-16 flex-1"
-            style={{ 
-              border: 'none', 
-              background: 'transparent',
-              lineHeight: '64px',
-              minWidth: 0
-            }}
-            overflowedIndicator={null} // Prevent the 3-dot overflow menu
-            disabledOverflow={true} // Disable auto-collapse
-          />
+        {/* <div className="flex-1 flex justify-center"> */}
+          <div className="flex items-center h-16 flex-1 min-w-0">
+            <Menu
+              mode="horizontal"
+              selectedKeys={[location.pathname]}
+              items={navItems}
+              className="bg-transparent border-0 h-16 flex-1 px-2"
+              style={{ 
+                border: 'none', 
+                background: 'transparent',
+                lineHeight: '64px',
+                minWidth: 0,
+                // marginBottom: "10px",
+              }}
+              overflowedIndicator={null} // Prevent the 3-dot overflow menu
+              disabledOverflow={true} // Disable auto-collapse
+            />
+          </div>
         </div>
-      </div>
 
       {/* Center Section - Search */}
-      <div 
-        className="h-9 px-3 py-1 bg-gray-50 dark:bg-gray-700 rounded-full border border-blue-500 dark:border-blue-400 flex items-center gap-2 mx-2 flex-shrink-0"
-        style={{
-          boxShadow: '0px 3px 4px rgba(0, 0, 0, 0.10) inset',
-        }}
-      >
-        <SearchOutlined className="text-blue-500 dark:text-blue-400 text-base" />
-        <span className="text-gray-700 dark:text-gray-200 text-xs font-medium whitespace-nowrap">
-          How can I help you?
-        </span>
-      </div>
+      <AiAssistantButton />
 
       {/* Right Actions Section */}
       <div className="flex items-center gap-2 px-3 border-l border-gray-300 dark:border-gray-600 h-16 flex-shrink-0">

@@ -50,7 +50,9 @@ export default function LoanDetailHeader({ ui, updateUI }: Props) {
             </span>
           </div>
           
-          <button className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+          <button 
+          onClick={() => updateUI({ showLoanDrawer: false })}
+          className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
             {/* <MoreOutlined className="text-gray-700 dark:text-gray-200 text-lg" /> */}
             <CloseOutlined className="text-gray-700 dark:text-gray-200 text-lg"/>
           </button>
@@ -58,7 +60,7 @@ export default function LoanDetailHeader({ ui, updateUI }: Props) {
       </div>
 
       {/* Second Row */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300 dark:border-gray-600">
+      <div className="flex mb-3 items-center justify-between px-4 py-2 border-b border-gray-300 dark:border-gray-600">
         {/* Left Section - Navigation Tabs */}
         <div className="flex items-center h-10 overflow-hidden rounded-lg border border-gray-400 dark:border-gray-500">
           <button className="h-full px-4 bg-white dark:bg-gray-800 border-r border-gray-400 dark:border-gray-500 text-gray-500 dark:text-gray-400 text-sm font-normal hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">

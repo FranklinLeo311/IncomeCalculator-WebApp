@@ -1,14 +1,16 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Button } from "antd";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Button, Input, Tooltip } from "antd";
 import AddUserModal from "./addUserModal";
 import { handleGetApi, handlePostApi } from "../../shared/utils/api";
-import Search from "antd/es/input/Search";
-import { DataTable } from "../../shared/accessories/DataTable";
+import { DataTable, DataTableRef } from "../../shared/accessories/DataTable";
 import { EditOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import ToggleComponent from "../../shared/accessories/Toggle";
 
 const Users: React.FC = () => {
   interface initialInputDetails {
     userid?: string | number;
+    acknowledgment: string;
+    password: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -20,6 +22,8 @@ const Users: React.FC = () => {
 
   const initialInputDetails: initialInputDetails = {
     userid: "0",
+    password: "",
+    acknowledgment: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -31,84 +35,21 @@ const Users: React.FC = () => {
 
   const [rowData, setRowData] = useState<any[]>([]);
   const [inputDetails, setInputDetails] = useState(initialInputDetails),
-   [inputValidation, setInputValidation] = useState<{
+    [inputValidation, setInputValidation] = useState<{
       [key: string]: string;
     }>({});
-  const [processingStatus, setProcessingStatus] = useState("pageOnLoad");
-  const [options, setOptions] = useState({
-    roles: [],
-    permissions: [],
+
+  const [modalDetails, setModalDetails] = useState({
+    showAddUserModel: false,
+    title: "",
   });
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [processingStatus, setProcessingStatus] = useState("pageOnLoad"),
+    [filterDataDetails, setFilterDataDetails] = useState({
+      searchText: "",
+    });
+  const userGridRef = useRef<DataTableRef>(null);
 
-  // Fetch roles on component mount
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const response = await handleGetApi("api/GetRoles", {
-          user_id: 67,
-          role_id: 3,
-        });
-        const rolesData = response?.data.Roles || [];
-
-        const rolesOptions = rolesData.map((role: any) => ({
-          value: role.RoleId,
-          label: role.Role,
-          // Optionally include other data
-          isTenantAdmin: role.IsTenantAdmin,
-        }));
-        console.log("API roles:", rolesOptions);
-
-        setOptions((prev) => ({
-          ...prev,
-          roles: rolesOptions,
-        }));
-      } catch (error) {
-        console.error("Error fetching roles:", error);
-      }
-    };
-
-    fetchRoles();
-  }, []);
-
-  useEffect(() => {
-    const fetchPermissions = async () => {
-      if (!selectedRole) return;
-
-      try {
-        const response = await handleGetApi("api/GetPermissions", {
-          user_id: 67,
-          role_id: selectedRole,
-        });
-        const { defaultrolepermission: permissions } = response?.data || {};
-
-        const permissionOptions = permissions.map((permission: any) => ({
-          value: permission.PermissionId,
-          label: permission.Permission,
-          // Optionally include other data
-          defaultPermission: permission.defaultPermission,
-        }));
-
-        setOptions((prev) => ({
-          ...prev,
-          permissions: permissionOptions || [],
-        }));
-        console.log("Options:", options);
-      } catch (error) {
-        console.error("Error fetching permissions:", error);
-      }
-    };
-    fetchPermissions();
-  }, [selectedRole]);
-
-  const handleRoleChange = (e: any) => {
-    debugger
-    const roleId = e.target?.value || e.value || e;
-    setSelectedRole(roleId);
-    handleChange(e);
-  };
-
-  useEffect(() => {
+  const getUserDetails = useLayoutEffect(() => {
     const fetchUsers = async () => {
       try {
         setProcessingStatus("pageOnLoad");
@@ -117,10 +58,10 @@ const Users: React.FC = () => {
           userid: 67,
         });
 
-        const data = JSON.parse(response?.data);
-        console.log("API Response:", data);
+        const data = JSON.parse(response);
 
-        const rowData = userData(data);
+        const rowData = userData(data.user);
+
         setRowData(rowData);
       } catch (error) {
         console.error("Failed to fetch users:", error);
@@ -133,27 +74,25 @@ const Users: React.FC = () => {
   }, []);
 
   const userData = (response: any): any[] => {
-    if (!response?.user || !Array.isArray(response.user)) return [];
+    if (!response || !Array.isArray(response)) return [];
 
-    return response.user.map((u: any) => ({
-      userId: u.user_id,
+    return response.map((u: any) => ({
+      userid: u.user_id,
+      password: u.password,
+      acknowledgment: u.acknowledgment,
       tenantId: u.TenantId,
       userName: u.UserName,
       firstName: u.first_name,
       lastName: u.Last_Name,
       email: u.email,
-      status: u.status === "1" ? "Active" : "Inactive",
-      role: u.Role,
-      mobileNumber: u.mobilenumber || "—",
-      permissions: u.permissionname,
+      status: u.status,
+      roleName: u.Role,
+      role: u.role_id,
+      phone: u.mobilenumber || "—",
+      permissions: u.permission,
+      permissionsName: u.permissionname,
     }));
   };
-
-  const [modalDetails, setModalDetails] = useState({
-    showAddUserModel: false,
-    data: [],
-  });
-
   const handleChange = (e: any) => {
     const { name, value } = e.target || e;
     if (name === "status") {
@@ -174,56 +113,105 @@ const Users: React.FC = () => {
       {
         headerName: "First Name",
         field: "firstName",
-        minWidth: 78,
+        minWidth: 120,
       },
 
       {
         headerName: "Last Name",
         field: "lastName",
-        minWidth: 140,
+        minWidth: 120,
       },
 
       {
         headerName: "Email",
         field: "email",
-        minWidth: 120,
+        minWidth: 160,
       },
       {
-        headerName: "Phone",
+        headerName: "Phone Number",
         field: "phone",
         minWidth: 120,
       },
       {
         headerName: "Role",
-        field: "role",
-        minWidth: 120,
+        field: "roleName",
+        minWidth: 140,
       },
+
       {
         headerName: "Permissions",
-        field: "permissions",
-        minWidth: 120,
-        cellRenderer: ({ value }: any) => <span>{value}</span>,
+        field: "permissionsName",
+        minWidth: 160,
+        cellRenderer: ({ value }: any) => {
+          if (!value) return <span>-</span>;
+
+          const permissions =
+            typeof value === "string" ? value.split(",") : value;
+          const cleanPermissions = permissions
+            .map((p: string) => p.trim())
+            .filter(Boolean);
+
+          if (cleanPermissions.length === 0) return <span>-</span>;
+          if (cleanPermissions.length === 1)
+            return <span>{cleanPermissions[0]}</span>;
+
+          return (
+            <span className="position-relative">
+              <span>{cleanPermissions[0]}</span>
+              <Tooltip
+                title={
+                  <div>
+                    {cleanPermissions.map(
+                      (permission: string, index: number) => (
+                        <div key={index}>• {permission}</div>
+                      )
+                    )}
+                  </div>
+                }
+              >
+                <span className="ml-1 text-[11px] text-gray-500 bg-neutral-600/20 size-5 rounded-lg z-10 inline-flex items-center justify-center">
+                  +{cleanPermissions.length - 1}
+                </span>
+              </Tooltip>
+            </span>
+          );
+        },
       },
 
       {
         headerName: "Status",
         field: "status",
-        minWidth: 100,
-        cellRenderer: ({ value }: any) => <span>{value}</span>,
+        minWidth: 120,
+        cellRenderer: ({ data }: any) => {
+          return (
+            <span className="pointer-events-none">
+              <ToggleComponent
+                labelB="Inactive"
+                labelA="Active"
+                checked={data.status === "1" ? true : false}
+                onChange={() => ""}
+                size="small"
+                className="text-xs"
+              />
+            </span>
+          );
+        },
       },
       {
         field: "action",
-        headerName: "Action",
-        minWidth: 100,
-        cellRenderer: (params) => {
+        headerName: "Actions",
+        minWidth: 30,
+        cellRenderer: (params: any) => {
           return (
             <EditOutlined
-              className={`cursor-pointer text-[var(--rl-blue)]`}
+              className={`cursor-pointer dark:text-white text-[15px]`}
               onClick={() => {
                 setModalDetails({
                   ...modalDetails,
                   showAddUserModel: true,
+                  title: "Edit User",
                 });
+                setInputDetails(params.data);
               }}
             />
           );
@@ -244,64 +232,40 @@ const Users: React.FC = () => {
   ): Promise<ApiResponse> => {
     try {
       const isNewUser = !userData.userid || userData.userid === "0";
-      const API_BASE_URL = import.meta.env.VITE_API_URL;
-      const endpoint = isNewUser
-        ? `${API_BASE_URL}api/CreateUser`
-        : `${API_BASE_URL}api/UpdateUser`;
+      const endpoint = isNewUser ? `/api/CreateUser` : `/api/UpdateUser`;
 
       // "http://localhost:23107/api/CreateUser"
-
-      // Convert boolean status to "0" or "1" string
-      const statusValue = userData.status === true ? "1" : "0";
 
       // Prepare XML payload without extra whitespace
       let xmlPayload = "";
 
       if (isNewUser) {
-        xmlPayload = `<user><tenantid>${tenantId}</tenantid><firstname>${userData.firstName}</firstname><lastname>${userData.lastName}</lastname><mobileno>${userData.phone}</mobileno><email>${userData.email}</email><status>${statusValue}</status><access>${userData.role}</access><permission>${userData.permissions}</permission><clerkid>${userId}</clerkid><flag>newuser</flag></user>`;
+        xmlPayload = `<user><tenantid>${tenantId}</tenantid><firstname>${userData.firstName}</firstname><lastname>${userData.lastName}</lastname><mobileno>${userData.phone}</mobileno><email>${userData.email}</email><status>${userData.status}</status><access>${userData.role}</access><permission>${userData.permissions}</permission><clerkid>${userId}</clerkid><flag>newuser</flag></user>`;
       } else {
-        // xmlPayload = `<user><tenantid>${tenantId}</tenantid><user_id>${
-        //   userData.id
-        // }</user_id><firstname>${userData.firstName}</firstname><lastname>${
-        //   userData.lastName
-        // }</lastname><mobileno>${userData.phone}</mobileno><email>${
-        //   userData.email
-        // }</email><oldStatus>${
-        //   userData.oldStatus
-        // }</oldStatus><status>${statusValue}</status><access>${
-        //   userData.role
-        // }</access><permission>${userData.permissions}</permission><password>${
-        //   userData.password || ""
-        // }</password><clerkid>${userId}</clerkid><acknowledgment>${
-        //   userData.acknowledgment || ""
-        // }</acknowledgment><flag>newuser</flag></user>`;
+        xmlPayload = `<user><tenantid>${tenantId}</tenantid><user_id>${userData.userid}</user_id><firstname>${userData.firstName}</firstname><lastname>${userData.lastName}</lastname><mobileno>${userData.phone}</mobileno><email>${userData.email}</email><oldStatus>1</oldStatus><status>${userData.status}</status><access>${userData.role}</access><permission>${userData.permissions}</permission><password>${userData.password}</password><clerkid>${userId}</clerkid><acknowledgment>${userData.acknowledgment}</acknowledgment><flag>newuser</flag></user>`;
       }
-
-      console.log("XML:", xmlPayload);
 
       // Send the XML string directly as plain text
       const response = await handlePostApi(
-        "/api/CreateUser",
+        endpoint,
         xmlPayload,
         "application/xml"
       );
 
-      console.log("response", response);
-
       return {
-        status: response.data.status || "1",
-        message: response.data.message || "Operation successful",
+        status: response.status || "1",
+        message: response.message || "Operation successful",
       };
     } catch (error: any) {
       console.error("Error updating user:", error);
-      console.error("Response data:", error.response?.data);
+      console.error("Response data:", error.response);
 
       if (error.response) {
         return {
           status: error.response.data?.status || "0",
           message:
-            error.response.data?.message ||
-            error.response.data?.detail ||
+            error.response.message ||
+            error.response.detail ||
             "An error occurred",
         };
       }
@@ -333,9 +297,7 @@ const Users: React.FC = () => {
 
   const handleSubmit = async () => {
     if (handleFormValidation(inputDetails)) return;
-    setModalDetails((prev) => ({ ...prev, showAddUserModel: false }));
 
-    console.log("Form submitted:", inputDetails);
     try {
       const tenantId = sessionStorage.getItem("TenantId") || 7;
       const userId = sessionStorage.getItem("UserId") || 0;
@@ -346,10 +308,15 @@ const Users: React.FC = () => {
         // Success
         console.log("Success:", result.message);
         // Close modal, refresh data, etc.
+        setModalDetails((prev) => ({ ...prev, showAddUserModel: false }));
+        setInputDetails(initialInputDetails);
+
+        getUserDetails;
       } else {
         // Error
         console.error("Error:", result.message);
         // Show error message to user
+        alert(result.message);
       }
     } catch (error) {
       console.error("Submission error:", error);
@@ -363,62 +330,71 @@ const Users: React.FC = () => {
           <h2 className="font-semibold flex items-center text-2xl pb-5 mr-5 text-gray-800 dark:text-white">
             Manage Users
           </h2>
-          <Search
+          <Input
             placeholder=" Search"
             prefix={<SearchOutlined />}
             suffix={null}
             allowClear
-            enterButton="Search"
-            size="middle"
-            onSearch={() => {}}
-            className="w-60 "
+            size="small"
+            onChange={(e) => {
+              setFilterDataDetails((prev) => ({
+                ...prev,
+                searchText: e.target.value,
+              }));
+            }}
+            className="w-60 h-8 shadow-sm"
           />
         </span>
         <Button
           type="primary"
           onClick={() => {
-            setModalDetails((prev) => ({ ...prev, showAddUserModel: true }));
+            setModalDetails((prev) => ({
+              ...prev,
+              showAddUserModel: true,
+              title: "Create User",
+            }));
           }}
         >
           <PlusOutlined />
           New User
         </Button>
       </div>
-      <div className="p-3 pr-1 shadow-md bg-white dark:bg-gray-700 rounded-lg">
-        <div className="w-full flex justify-end"></div>
 
-        <div className="container">
-          <DataTable
-            domLayout="autoHeight"
-            data={rowData}
-            column={columnDef}
-            loading={processingStatus === "pageOnLoad"}
-            pagination
-            className=""
-            defaultColDef={{
-              wrapText: true,
-              autoHeight: true,
-              suppressMovable: false,
-            }}
-            defaultPageSize={10}
-          />
-        </div>
+      <div className="">
+        <DataTable
+          domLayout="autoHeight"
+          data={rowData}
+          column={columnDef}
+          loading={processingStatus === "pageOnLoad"}
+          pagination
+          className=" shadow-xl"
+          ref={userGridRef}
+          searchText={filterDataDetails["searchText"] || ""}
+          defaultColDef={{
+            wrapText: true,
+            autoHeight: true,
+            suppressMovable: false,
+          }}
+          defaultPageSize={15}
+        />
+      </div>
 
+      {modalDetails.showAddUserModel && (
         <AddUserModal
-          openModal={modalDetails.showAddUserModel}
-          onCancel={() => {
+          onClose={() => {
             setModalDetails((prev) => ({ ...prev, showAddUserModel: false }));
+            setInputDetails(initialInputDetails);
+            setInputValidation({});
           }}
           onSubmit={() => {
             handleSubmit();
           }}
           handleChange={handleChange}
           validation={inputValidation}
-          handleRoleChange={handleRoleChange}
           userDetails={inputDetails}
-          options={options}
+          modalDetails={modalDetails}
         />
-      </div>
+      )}
     </main>
   );
 };

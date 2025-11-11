@@ -10,7 +10,7 @@
 }
 
 import { useState, ChangeEvent, useEffect, useMemo } from "react";
-import { Form, Input } from "antd";
+import { Tooltip, Input } from "antd";
 import { capitalizeFirstLetter, cleanValue } from "../utils/commonFunctions";
 import {
   formatCellPhone,
@@ -19,8 +19,7 @@ import {
   formatPercentage,
   formatSSN,
 } from "../utils/formatFunctions";
-import { WarningFilled } from "@ant-design/icons";
-import { Tooltip } from "react-tooltip";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 interface InputFieldProps {
   label?: string;
@@ -76,6 +75,7 @@ const InputField = ({
 }: InputFieldProps) => {
   const [value, setValue] = useState<string | number | null>(inputValue ?? ""),
     [isFocused, setIsFocused] = useState(false);
+
 
   const iAllowNegative = useMemo(() => {
     return allowNegative && ["default", ""].includes(formatType);
@@ -274,9 +274,10 @@ const InputField = ({
         inValid && "input-invalid"
       } ${className} field-${name}`}
     >
-
-      <label htmlFor={id} className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">
-      { required && <span className="text-red-500 absolute left-[-10px]">*</span> }
+      <label htmlFor={id} className="block mb-1 text-sm font-medium ">
+        {required && (
+          <span className="text-red-500 absolute left-[-10px]">*</span>
+        )}
         {label}
       </label>
       <Input
@@ -296,8 +297,19 @@ const InputField = ({
         }
         title={value ? value.toString() : placeholder || label}
         disabled={textInputProps["disabled"]}
+        className="w-[100%] shadow-sm"
         status={inValid ? "error" : ""}
-        className="dark:bg-gray-900 dark:text-gray-200 w-[100%]"
+        suffix={
+          <span>
+            {inValid && (
+              <Tooltip
+                title={capitalizeFirstLetter(inValid) || "Invalid input"}
+              >
+                <InfoCircleOutlined />
+              </Tooltip>
+            )}
+          </span>
+        }
       />
 
       {/* {inValid && (
@@ -311,7 +323,7 @@ const InputField = ({
         </Tooltip>
       )} */}
 
-      {inValid && (
+      {/* {inValid && (
         <>
           <span
             data-tooltip-id={`${id}-tooltip`}
@@ -325,9 +337,13 @@ const InputField = ({
             variant="dark"
             className="tooltip-default"
             content={capitalizeFirstLetter(inValid) || "Invalid input"}
-          />
+          /> 
+          <span className="pr-1 text-red-500 text-sm">
+            {capitalizeFirstLetter(inValid) || "Invalid input"}
+          </span>
+         
         </>
-      )}
+      )} */}
     </div>
   );
 };

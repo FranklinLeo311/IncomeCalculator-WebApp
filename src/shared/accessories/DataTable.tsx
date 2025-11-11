@@ -1,22 +1,3 @@
-
-// how to use -- refer to DataTable.stories.tsx
-{/* <DataTable
-            domLayout="autoHeight"
-            data={filteredSummaryLoanData}
-            column={columnDef}
-            loading={processingStatus === "pageOnLoad"}
-            pagination
-            className="border-t-[0]"
-            ref={dashboardGridRef}
-            searchText={filterDataDetails["searchText"] || ""}
-            defaultColDef={{
-              wrapText: true,
-              autoHeight: true,
-            }}
-            defaultPageSize={20}
-          /> */}
-
-
 import "ag-grid-community/styles/ag-theme-alpine.min.css";
 import "../../styles/ag-grid-custom.css";
 import { AgGridReact } from "ag-grid-react";
@@ -29,9 +10,13 @@ import {
   forwardRef,
   useCallback,
 } from "react";
-import { Pagination } from "antd";
+import { Pagination, PaginationProps, Select, Typography } from "antd";
 import { RowClickedEvent } from "ag-grid-community";
 import useWindowWidth from "../hooks/useWindowWidth";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+
+const { Option } = Select;
+const { Text } = Typography;
 
 export const DataTable = forwardRef<DataTableRef, DataTableProps>(
   (props, parentGridRef) => {
@@ -63,11 +48,10 @@ export const DataTable = forwardRef<DataTableRef, DataTableProps>(
       [page, setPage] = useState(1);
 
     const gridRef = useRef<AgGridReact>(null);
+
     useEffect(() => {
       if (pagination && gridRef.current?.api) {
         setPageSize(defaultPageSize);
-        // setPage(1);
-        // gridRef.current.api.paginationGoToFirstPage();
       }
     }, [rowData, pagination, defaultPageSize]);
 
@@ -104,7 +88,6 @@ export const DataTable = forwardRef<DataTableRef, DataTableProps>(
         rowHeight: 30,
         headerHeight,
         suppressDragLeaveHidesColumns: true,
-
         getRowHeight: () => null,
       };
     }, [headerHeight]);
@@ -134,6 +117,24 @@ export const DataTable = forwardRef<DataTableRef, DataTableProps>(
       };
     }, []);
 
+    // Calculate pagination info
+    const paginationInfo = useMemo(() => {
+      if (!pagination) return null;
+
+      const startItem = (page - 1) * pageSize + 1;
+      const endItem = Math.min(page * pageSize, filteredRowCount);
+
+      return {
+        startItem,
+        endItem,
+        total: filteredRowCount,
+      };
+    }, [page, pageSize, filteredRowCount, pagination]);
+
+    const totalPages = useMemo(() => {
+      return Math.ceil(filteredRowCount / pageSize);
+    }, [filteredRowCount, pageSize]);
+
     const adjustHeaderHeight = useCallback(() => {
       const { api } = gridRef.current || {};
       if (!api) return;
@@ -144,14 +145,14 @@ export const DataTable = forwardRef<DataTableRef, DataTableProps>(
       let max = 35;
       elementList.forEach((el) => {
         const rect = el.getBoundingClientRect();
-        const h = Math.ceil(rect.height) + 6; // little padding
+        const h = Math.ceil(rect.height) + 6;
         if (h > max) max = h;
       });
 
       max = max + 5;
 
       if (max !== headerHeight) setHeaderHeight(max);
-    }, []);
+    }, [headerHeight]);
 
     const handleResizeToFit = () => {
       if (gridRef.current) {
@@ -213,17 +214,34 @@ export const DataTable = forwardRef<DataTableRef, DataTableProps>(
       return filteredRowCount === 0;
     }, [filteredRowCount]);
 
-    // useEffect(() => {
-    //   const intervalId = setInterval(handleResizeToFit, 1500);
+    const handlePageChange = (newPage: number, newPageSize: number) => {
+      setPage(newPage);
+      setPageSize(newPageSize);
+      gridRef.current?.api.paginationGoToPage(newPage - 1);
+      setTimeout(() => {
+        gridRef.current?.api.sizeColumnsToFit();
+      }, 250);
+    };
 
-    //   return () => clearInterval(intervalId);
-    // }, []);
+    const itemRender: PaginationProps["itemRender"] = (
+      _,
+      type,
+      originalElement
+    ) => {
+      if (type === "prev") {
+        return;
+      }
+      if (type === "next") {
+        return;
+      }
+      return originalElement;
+    };
+
     return (
       <div
-        className={`!rounded-md ${className} ${
+        className={`rounded-md w-full h-full ${className} ${
           !pagination ? "no-pagination-table" : ""
         } ${isFilteredEmpty ? "ag-no-rows-table" : ""}`}
-        style={{ width: "100%", height: "100%" }}
       >
         <AgGridReact
           ref={gridRef}
@@ -233,6 +251,9 @@ export const DataTable = forwardRef<DataTableRef, DataTableProps>(
           domLayout={domLayout}
           quickFilterText={searchText}
           singleClickEdit={isEditable}
+          loading={loading}
+          onGridReady={onGridReady}
+          onRowClicked={onRowClicked}
           overlayLoadingTemplate={`<div class="flex items-center justify-center text-[12px]">
   <div role="status" aria-label="Loading" class="w-[12px] h-[12px] mr-2 animate-spin text-blue-600">
     <svg class="w-full h-full" viewBox="0 0 100 100">
@@ -243,9 +264,6 @@ export const DataTable = forwardRef<DataTableRef, DataTableProps>(
   </div>
   <div>Loading...</div>
 </div>`}
-          loading={loading}
-          onGridReady={onGridReady}
-          onRowClicked={onRowClicked}
           overlayNoRowsTemplate={`<div class="flex items-center justify-center text-gray-500 text-sm h-full">
     No record found
   </div>`}
@@ -254,21 +272,80 @@ export const DataTable = forwardRef<DataTableRef, DataTableProps>(
           {...rest}
         />
 
-        {pagination && (
-          <Pagination
-            totalItems={filteredRowCount}
-            pageSize={pageSize}
-            pageSizes={pageSizes}
-            page={page}
-            onChange={({ page, pageSize }) => {
-              setPage(page);
-              setPageSize(pageSize);
-              gridRef.current?.api.paginationGoToPage(page - 1);
-              setTimeout(() => {
-                gridRef.current?.api.sizeColumnsToFit();
-              }, 250);
-            }}
-          />
+        {pagination && filteredRowCount > 0 && (
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 p-3 rounded-b-md dark:bg-[var(--bg-secondary)] shadow-md">
+            <div className="flex items-center gap-2">
+              <span className="text-sm">Items per page:</span>
+              <Select
+                value={pageSize}
+                onChange={(value) => {
+                  setPageSize(value);
+                  setPage(1);
+                  gridRef.current?.api.paginationGoToPage(0);
+                  setTimeout(() => {
+                    gridRef.current?.api.sizeColumnsToFit();
+                  }, 250);
+                }}
+                className="w-20"
+                size="small"
+              >
+                {pageSizes.map((size) => (
+                  <Option key={size} value={size} >
+                    {size}
+                  </Option>
+                ))}
+              </Select>
+
+              {paginationInfo && (
+                <span className="text-sm text-[#969696]">
+                  {`${paginationInfo.startItem}-${paginationInfo.endItem} of ${paginationInfo.total} items`}
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-4 ">
+              <Pagination
+                current={page}
+                pageSize={pageSize}
+                total={filteredRowCount}
+                showSizeChanger={false}
+                onChange={handlePageChange}
+                className="pagination-custom"
+                itemRender={itemRender}
+              />
+
+              <div className="h-8 border-l border-gray-300 dark:border-gray-600" />
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() =>
+                    handlePageChange(Math.max(1, page - 1), pageSize)
+                  }
+                  disabled={page === 1}
+                  className="flex items-center justify-center w-8 h-8  rounded hover:border-blue-500 hover:text-blue-500 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:text-current transition-colors"
+                  aria-label="Previous page"
+                >
+                  <LeftOutlined />
+                </button>
+                <button
+                  onClick={() =>
+                    handlePageChange(Math.min(totalPages, page + 1), pageSize)
+                  }
+                  disabled={page >= totalPages}
+                  className="flex items-center justify-center w-8 h-8 rounded hover:border-blue-500 hover:text-blue-500 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:border-gray-300 disabled:hover:text-current transition-colors"
+                  aria-label="Next page"
+                >
+                  <RightOutlined />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {pagination && filteredRowCount === 0 && (
+          <div className="flex justify-center items-center mt-4 p-3 bg-gray-50 rounded-lg border">
+            <Text type="secondary">No data available</Text>
+          </div>
         )}
       </div>
     );
@@ -289,8 +366,10 @@ interface DataTableProps {
   domLayout?: "autoHeight" | "normal";
   className?: string;
   onRowClicked?: (event: RowClickedEvent<any, any>) => any;
+  resetTableUI?: any;
   [key: string]: any;
 }
+
 export interface DataTableRef {
   setPageNumber: (page: number, pageSize?: number) => void;
   handleResizeToFit: () => void;

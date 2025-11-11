@@ -8,6 +8,7 @@ interface ToggleProps {
   onChange: (checked: boolean) => void;
   required?: boolean;
   size?: "small" | "default";
+  className?: string;
   // change here Logesh
 }
 
@@ -19,6 +20,7 @@ const ToggleComponent = ({
   onChange = () => {},
   required = false,
   size = "default",
+  className = "",
   ...rest
 }: ToggleProps) => {
   const id = `toggle_${Math.floor(100 + Math.random() * 900)}`;
@@ -29,7 +31,7 @@ const ToggleComponent = ({
     >
       <label
         htmlFor={id}
-        className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200"
+        className="block mb-1 text-sm font-medium w-fit"
       >
         {required && (
           <span className="text-red-500 absolute left-[-10px] top-[-2px]">
@@ -44,10 +46,12 @@ const ToggleComponent = ({
         onChange={onChange}
         id={id}
         size={size}
+        className={`${className}`}
+         
       />
       <span
-        className={`pl-2 align-middle text-gray-500 dark:text-gray-200 
-      text-[${size === "small" ? "14px" : "16px"}]`}
+        className={`pl-2 align-middle 
+      text-[${size === "small" ? "13px" : "14px"}]`}
       >
         {valueText}
       </span>

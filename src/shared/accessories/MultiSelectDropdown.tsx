@@ -1,8 +1,8 @@
 import { WarningFilled } from "@carbon/icons-react";
 import { useMemo, useEffect } from "react";
 import { capitalizeFirstLetter } from "../utils/commonFunctions";
-import { Tooltip } from "react-tooltip";
-import { Checkbox, Select } from "antd";
+import { Checkbox, Select, Tooltip } from "antd";
+import { InfoCircleOutlined } from "@ant-design/icons";
 
 interface OptionWithValue {
   label: string;
@@ -35,6 +35,7 @@ interface MultiSelectDropdownProps {
   placeholder?: string;
   className?: string;
   keyConfig?: KeyConfig;
+  exceptionField?: boolean;
 }
 
 const noRecordsOption = [
@@ -53,28 +54,14 @@ const MultiSelectDropdown = ({
   className = "",
   required = false,
   keyConfig,
-  placeholder = "Select a role",
+  exceptionField = false,
+  placeholder = "",
   ...rest
 }: MultiSelectDropdownProps) => {
-
   const selectedValues = useMemo(() => {
+    if (value.length === 0) return [];
     return value.split(",").filter((v) => v.trim() !== "");
   }, [value]);
-
-  useEffect(() => {
-    if (!options || options.length === 0) return;
-
-    const defaultPermissionStr = options[0]?.defaultPermission || "";
-
-    const defaultPermissionValues = defaultPermissionStr
-      .split(",")
-      .map((v) => v.trim())
-      .filter(Boolean);
-
-    const commaSeparatedValue = defaultPermissionValues.join(",");
-
-    onChange({ name, value: commaSeparatedValue });
-  }, [options]);
 
   const handleChange = (selectedValueArray: string[]) => {
     const commaSeparatedValue = selectedValueArray.join(",");
@@ -86,10 +73,10 @@ const MultiSelectDropdown = ({
     []
   );
 
-  const displayValue = selectedValues.length === 0 ? [] : selectedValues;
+  const displayValue = selectedValues?.length === 0 ? [] : selectedValues;
 
   const optionRender = (option: any) => {
-    const isSelected = selectedValues.includes(option.value);
+    const isSelected = selectedValues?.includes(option.value);
     return (
       <div
         style={{ display: "flex", alignItems: "center" }}
@@ -105,6 +92,10 @@ const MultiSelectDropdown = ({
     );
   };
 
+  inValid =
+    (value || "").toString().trim().length > 0 && !exceptionField
+      ? ""
+      : inValid;
   return (
     <div
       className={`relative ${
@@ -114,7 +105,7 @@ const MultiSelectDropdown = ({
       {label && (
         <label
           htmlFor={id}
-          className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200"
+          className="block mb-1 text-sm font-medium w-fit"
         >
           {required && (
             <span className="text-red-500 absolute left-[-10px] top-[-2px]">
@@ -131,11 +122,9 @@ const MultiSelectDropdown = ({
         mode="multiple"
         options={options.length === 0 ? noRecordsOption : options}
         value={displayValue}
-        titleText={label}
         onChange={handleChange}
         size={size}
         maxTagCount="responsive"
-        className="dark:bg-gray-900 dark:text-gray-200 w-[100%]"
         allowClear={true}
         placeholder={placeholder}
         filterOption={(input, option) =>
@@ -147,12 +136,14 @@ const MultiSelectDropdown = ({
             .localeCompare((optionB?.label ?? "").toLowerCase())
         }
         optionRender={optionRender}
+        status={inValid ? "error" : ""}
+        className="dark:bg-gray-900 dark:text-gray-200 w-[100%] shadow-sm"
         {...rest}
       />
 
       {inValid && (
         <>
-          <span
+          {/* <span
             data-tooltip-id={`${id}-tooltip`}
             className="cds--text-input__invalid-icon cursor-pointer translate-y-3 -translate-x-1"
           >
@@ -164,7 +155,10 @@ const MultiSelectDropdown = ({
             variant="dark"
             className="tooltip-default"
             content={capitalizeFirstLetter(inValid) || "Invalid input"}
-          />
+          /> */}
+          <span className="pr-1 text-red-500 text-sm">
+            {capitalizeFirstLetter(inValid) || "Invalid input"}
+          </span>
         </>
       )}
     </div>

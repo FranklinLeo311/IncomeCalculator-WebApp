@@ -9,7 +9,7 @@ const axiosApi = axios.create({
 axiosApi.interceptors.request.use(
   (config) => {
     // const token = sessionStorage.getItem("auth_token");
-    const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiUmFteWEgTXVuaXJhdGhuYW0iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJybXVuaXJhdGhuYW1AY2EtdXNhLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiOTEiLCJuYmYiOiIxNzYyNDkzNjE1IiwiZXhwIjoiMTc2MjU4MDAxNSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6Ik1hc3RlciBBZG1pbiIsIlBlcm1pc3Npb24iOlsiVXNlciBNYW5hZ2VtZW50IiwiRnVsbCBBY2Nlc3MiLCJXcml0ZSBBY2Nlc3MiLCJSZWFkIE9ubHkgQWNjZXNzIiwiUmVwb3J0cyIsIkRvY3VtZW50IFVwbG9hZCIsIkNyZWF0ZSBMb2FuIiwiRWRpdCBMb2FuIElEIiwiRGVsZXRlIExvYW4iXX0.ke81ZzIi4F7a6sg0lgbas8oyazc3dzscZuS_UoI_Vu4`;
+    const token = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiUmFteWEgTSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6InJtdW5pcmF0aG5hbUBjYS11c2EuY29tIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvbmFtZWlkZW50aWZpZXIiOiI2NyIsIm5iZiI6IjE3NjI4Mzg5NzMiLCJleHAiOiIxNzYyOTI1MzczIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiTWFzdGVyIEFkbWluIiwiUGVybWlzc2lvbiI6WyJVc2VyIE1hbmFnZW1lbnQiLCJGdWxsIEFjY2VzcyJdfQ.RxgJ2AwmVoTqw-UmXj4qkR7iEZKAtV0LJR-G0SzKGbw`;
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -36,9 +36,9 @@ axiosApi.interceptors.response.use(
 const handleGetApi = async (apiName, params = {}) => {
   try {
     const response = await axiosApi.get(apiName, { params });
-    const { outStatus, outJSON } = response.data;
-    if (outStatus === "pass") {
-      return outJSON;
+
+    if (response.data) {
+      return response.data;
     } else {
       console.error(`GET ${apiName} failed:`, outStatus);
       return null;
@@ -50,11 +50,15 @@ const handleGetApi = async (apiName, params = {}) => {
 };
 
 // POST request
-const handlePostApi = async (apiName, data = {}, contentType = 'application/json') => {
+const handlePostApi = async (
+  apiName,
+  data = {},
+  contentType = "application/json"
+) => {
   try {
     const config = {
       headers: {
-        'Content-Type': contentType,
+        "Content-Type": contentType,
       },
     };
     const response = await axiosApi.post(apiName, data, config);

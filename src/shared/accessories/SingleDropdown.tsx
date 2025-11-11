@@ -10,7 +10,7 @@
               className="w-[200px]"
             /> */
 }
-import {  WarningFilled } from "@carbon/icons-react";
+import { WarningFilled } from "@carbon/icons-react";
 import { Select } from "antd";
 import { Tooltip } from "react-tooltip";
 import { useMemo, useState } from "react";
@@ -72,25 +72,28 @@ const SingleDropdown = (props: SingleDropdownProps) => {
 
   const isNotNumber = name.toLocaleLowerCase().includes("state");
   type KeyConfig = {
-  value: string;
-  label: string;
-};
+    value: string;
+    label: string;
+  };
   interface HandleUpdateKeyParams {
-  keyConfig: KeyConfig;
-  options: { [key: string]: any };
-}
+    keyConfig: KeyConfig;
+    options: { [key: string]: any };
+  }
 
-const handleUpdateKey = ({
-  keyConfig: { value: k, label: l },
-  options,
-}: HandleUpdateKeyParams): { value: any; label: any; disabled?: boolean }[] => {
-  return options.map((option: any) => ({
-    value: option[k],
-    label: option[l],
-    disabled: Boolean(option["disabled"]),
-  }));
-};
-
+  const handleUpdateKey = ({
+    keyConfig: { value: k, label: l },
+    options,
+  }: HandleUpdateKeyParams): {
+    value: any;
+    label: any;
+    disabled?: boolean;
+  }[] => {
+    return options.map((option: any) => ({
+      value: option[k],
+      label: option[l],
+      disabled: Boolean(option["disabled"]),
+    }));
+  };
 
   const options = useMemo(() => {
     return keyConfig
@@ -103,8 +106,7 @@ const handleUpdateKey = ({
 
   if (!isNotNumber) value = Number(value) ?? null;
 
-  const [inputValue, setInputValue] = useState(""),
-    [isOpen, setIsOpen] = useState<Boolean>(false);
+  const [inputValue, setInputValue] = useState("");
 
   const selectedItemValue = useMemo(() => {
     if (value !== null && value !== undefined) {
@@ -120,7 +122,6 @@ const handleUpdateKey = ({
 
   const handleChange = (e: any) => {
     if (e["inputValue"]) return;
-    setIsOpen(false);
 
     // const selected = e["selectedItem"]
     //   ? typeof e["selectedItem"] === "object"
@@ -183,6 +184,11 @@ const handleUpdateKey = ({
     []
   );
 
+  inValid =
+    (value || "").toString().trim().length > 0 && !exceptionField
+      ? ""
+      : inValid;
+
   return (
     <div
       className={`dropdown-field relative small-padding ${
@@ -204,6 +210,7 @@ const handleUpdateKey = ({
       </label>
       <Select
         {...rest}
+        value={selectedItem?.value}
         options={filteredOptions}
         placeholder={placeholder || label}
         onChange={handleChange}
@@ -214,28 +221,12 @@ const handleUpdateKey = ({
         allowClear={true}
         size={size}
         virtual={true}
-        className="dark:bg-gray-900 dark:text-gray-200 w-[100%]"
-      />
-      <div
-        className="caret-zone"
-        id={`${id}-caret-zone`}
-        title="Open menu"
-        onClick={(e) => {
-          try {
-            if (!isOpen) {
-              (e.target as HTMLElement).parentElement
-                ?.querySelector(".cds--text-input")
-                ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-              setIsOpen(true);
-            } else {
-              setIsOpen(false);
-            }
-          } catch (error) {}
-        }}
+        className="dark:bg-gray-900 dark:text-gray-200 w-[100%] shadow-sm"
+        status={inValid ? "error" : ""}
       />
       {inValid && (
         <>
-          <span
+          {/* <span
             data-tooltip-id={`${id}-tooltip`}
             className="cds--text-input__invalid-icon cursor-pointer translate-y-3 -translate-x-1"
           >
@@ -247,7 +238,10 @@ const handleUpdateKey = ({
             variant="dark"
             className="tooltip-default"
             content={capitalizeFirstLetter(inValid) || "Invalid input"}
-          />
+          /> */}
+          <span className="pr-1 text-red-500 text-sm">
+            {capitalizeFirstLetter(inValid) || "Invalid input"}
+          </span>
         </>
       )}
     </div>
